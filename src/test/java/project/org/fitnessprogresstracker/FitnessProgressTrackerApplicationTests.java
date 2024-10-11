@@ -8,8 +8,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import project.org.dto.LoginDTO;
-import project.org.dto.SignUpDTO;
+import project.org.fitnessprogresstracker.dto.JwtRequest;
+import project.org.fitnessprogresstracker.dto.RegistrationUserDto;
 import project.org.fitnessprogresstracker.repository.UserRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -22,19 +22,19 @@ class FitnessProgressTrackerApplicationTests {
     UserRepository userRepository;
     @Test
     void signNnTest(){
-        SignUpDTO signUpDTO = SignUpDTO.builder().
-                name("testName").
+        RegistrationUserDto registrationUserDto = RegistrationUserDto.builder().
+                username("testName").
                 email("test@gmail.com").
                 username("testUsername").
                 password("password").build();
-        testRestTemplate.postForEntity("/api/auth/signup", signUpDTO, Void.class );
+        testRestTemplate.postForEntity("/api/auth/signup", registrationUserDto, Void.class );
 //        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
 
-        LoginDTO loginDTO = LoginDTO.builder().
-                usernameOrEmail("testName").
+        JwtRequest jwtRequest = JwtRequest.builder().
+                username("testName").
                 password("password").
                 build();
-        ResponseEntity response = testRestTemplate.postForEntity("/api/auth/signin", loginDTO, Void.class);
+        ResponseEntity response = testRestTemplate.postForEntity("/api/auth/signin", jwtRequest, Void.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
     @AfterEach

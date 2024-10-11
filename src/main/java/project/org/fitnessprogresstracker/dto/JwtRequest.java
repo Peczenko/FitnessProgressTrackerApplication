@@ -1,13 +1,12 @@
-package project.org.dto;
+package project.org.fitnessprogresstracker.dto;
+
 
 import lombok.Builder;
 import lombok.Data;
 
 @Data
 @Builder
-public class SignUpDTO {
-    private String name;
+public class JwtRequest {
     private String username;
-    private String email;
     private String password;
 }
