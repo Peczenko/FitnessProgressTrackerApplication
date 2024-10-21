@@ -29,7 +29,14 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         String authHeader = request.getHeader("Authorization");
         String username = null;
         String jwt = null;
-
+//        log.info("filter is working");
+//        log.info(authHeader);
+//        if(authHeader == null){
+//            log.warn("HEADER IS NULL");
+//        }
+//        if(!authHeader.startsWith("Bearer ")){
+//            log.warn("DOES NOT STARTS WITH ???");
+//        }
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             jwt = authHeader.substring(7);
             try {
@@ -39,7 +46,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             } catch (SignatureException e) {
                 log.debug("Signature is incorrect");
             }
-        }
+        } else
+            log.error("NULL IS");
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(

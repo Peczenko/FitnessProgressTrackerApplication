@@ -10,9 +10,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import project.org.fitnessprogresstracker.dto.RegistrationUserDto;
-import project.org.fitnessprogresstracker.repository.RoleRepository;
 import project.org.fitnessprogresstracker.repository.UserRepository;
-import project.org.fitnessprogresstracker.user.User;
+import project.org.fitnessprogresstracker.entities.User;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,7 +22,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final RoleService roleService;
 

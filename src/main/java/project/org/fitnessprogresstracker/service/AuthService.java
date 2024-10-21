@@ -15,7 +15,7 @@ import project.org.fitnessprogresstracker.dto.JwtResponse;
 import project.org.fitnessprogresstracker.dto.RegistrationUserDto;
 import project.org.fitnessprogresstracker.dto.UserDto;
 import project.org.fitnessprogresstracker.exceptions.AppError;
-import project.org.fitnessprogresstracker.user.User;
+import project.org.fitnessprogresstracker.entities.User;
 import project.org.fitnessprogresstracker.utils.JwtTokenUtils;
 
 @Service
@@ -29,7 +29,7 @@ public class AuthService {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
         } catch (BadCredentialsException e) {
-            return new ResponseEntity<>(new AppError(HttpStatus.UNAUTHORIZED.value(), "Неправильный логин или пароль"), HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(new AppError(HttpStatus.UNAUTHORIZED.value(), "Incorrect username or password"), HttpStatus.UNAUTHORIZED);
         }
         UserDetails userDetails = userService.loadUserByUsername(authRequest.getUsername());
         String token = jwtTokenUtils.generateToken(userDetails);
@@ -38,15 +38,14 @@ public class AuthService {
 
     public ResponseEntity<?> createNewUser(@RequestBody RegistrationUserDto registrationUserDto) {
         if (!registrationUserDto.getPassword().equals(registrationUserDto.getPasswordConfirm())) {
-            return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), "Пароли не совпадают"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), "Passwords are not matching"), HttpStatus.BAD_REQUEST);
         }
         if (userService.findByUsername(registrationUserDto.getUsername()).isPresent()) {
-            return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), "Пользователь с указанным именем уже существует"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), "User already exists"), HttpStatus.BAD_REQUEST);
         }
         User user = userService.createNewUser(registrationUserDto);
-        return ResponseEntity.ok(new UserDto(user.getId(), user.getUsername(), user.getEmail()));
+        return ResponseEntity.ok(new UserDto(user.getUsername(), user.getEmail()));
     }
-
 
 
 }

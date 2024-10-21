@@ -1,12 +1,9 @@
-package project.org.fitnessprogresstracker.user;
+package project.org.fitnessprogresstracker.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.List;
 
 @Entity
 @Data

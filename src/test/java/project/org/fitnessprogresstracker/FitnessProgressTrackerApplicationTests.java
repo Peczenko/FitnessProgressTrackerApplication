@@ -8,7 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import project.org.fitnessprogresstracker.dto.JwtRequest;
+import project.org.fitnessprogresstracker.controllers.AuthController;
 import project.org.fitnessprogresstracker.dto.RegistrationUserDto;
 import project.org.fitnessprogresstracker.repository.UserRepository;
 
@@ -20,26 +20,20 @@ class FitnessProgressTrackerApplicationTests {
     TestRestTemplate testRestTemplate;
     @Autowired
     UserRepository userRepository;
+    @Autowired
+    AuthController authController;
     @Test
     void signNnTest(){
         RegistrationUserDto registrationUserDto = RegistrationUserDto.builder().
                 username("testName").
                 email("test@gmail.com").
-                username("testUsername").
-                password("password").build();
-        testRestTemplate.postForEntity("/api/auth/signup", registrationUserDto, Void.class );
-//        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-
-        JwtRequest jwtRequest = JwtRequest.builder().
-                username("testName").
                 password("password").
+                confirmPassword("password").
                 build();
-        ResponseEntity response = testRestTemplate.postForEntity("/api/auth/signin", jwtRequest, Void.class);
+        ResponseEntity<Void> response =  testRestTemplate.postForEntity("/api/auth/register", registrationUserDto, Void.class );
+        System.out.println(response.getBody());
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    }
-    @AfterEach
-     void cleanDB(){
-        userRepository.deleteAll();
+
     }
 
 

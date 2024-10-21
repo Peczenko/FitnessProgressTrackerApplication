@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import project.org.fitnessprogresstracker.repository.UserRepository;
-import project.org.fitnessprogresstracker.user.User;
+import project.org.fitnessprogresstracker.entities.User;
 
 import java.util.List;
 

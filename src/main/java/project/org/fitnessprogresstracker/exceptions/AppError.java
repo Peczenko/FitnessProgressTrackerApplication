@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.Date;
 
 @Data
-public class AppError {
+public class AppError extends Exception {
     private int status;
     private String message;
     private Date timestamp;

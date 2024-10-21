@@ -4,7 +4,7 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import project.org.fitnessprogresstracker.repository.RoleRepository;
-import project.org.fitnessprogresstracker.user.Role;
+import project.org.fitnessprogresstracker.entities.Role;
 
 @Component
 @RequiredArgsConstructor

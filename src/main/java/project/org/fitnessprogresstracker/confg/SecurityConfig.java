@@ -55,7 +55,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/secured").authenticated()
+                        .requestMatchers("/workouts/add").authenticated()
                         .requestMatchers("info").authenticated()
                         .requestMatchers("/admin").hasRole("ADMIN")
                         .anyRequest().permitAll())

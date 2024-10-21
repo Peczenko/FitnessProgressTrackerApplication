@@ -1,4 +1,4 @@
-package project.org.fitnessprogresstracker.user;
+package project.org.fitnessprogresstracker.entities;
 
 import jakarta.persistence.*;
 import lombok.Data;
