@@ -13,7 +13,7 @@ import java.util.Collection;
 @Table(name = "user_table", uniqueConstraints = {
         @UniqueConstraint(columnNames = {"username"}),
         @UniqueConstraint(columnNames = {"email"})}
-      )
+)
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

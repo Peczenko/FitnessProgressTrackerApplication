@@ -1,7 +1,7 @@
 package project.org.fitnessprogresstracker;
 
 
-import org.junit.jupiter.api.AfterEach;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -28,7 +28,7 @@ class FitnessProgressTrackerApplicationTests {
                 username("testName").
                 email("test@gmail.com").
                 password("password").
-                confirmPassword("password").
+                passwordConfirm("password").
                 build();
         ResponseEntity<Void> response =  testRestTemplate.postForEntity("/api/auth/register", registrationUserDto, Void.class );
         System.out.println(response.getBody());
