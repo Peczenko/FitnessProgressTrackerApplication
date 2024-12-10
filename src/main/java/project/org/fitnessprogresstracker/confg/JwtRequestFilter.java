@@ -11,40 +11,35 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.filter.OncePerRequestFilter;
-import project.org.fitnessprogresstracker.utils.JwtTokenUtils;
+import project.org.fitnessprogresstracker.service.JwtTokenParser;
 
 import java.io.IOException;
 import java.util.stream.Collectors;
 
-@Component
+@Service
 @RequiredArgsConstructor
 @Slf4j
 public class JwtRequestFilter extends OncePerRequestFilter {
-    private final JwtTokenUtils jwtTokenUtils;
+    private final JwtTokenParser jwtTokenParser;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String authHeader = request.getHeader("Authorization");
         String username = null;
         String jwt = null;
-//        log.info("filter is working");
-//        log.info(authHeader);
-//        if(authHeader == null){
-//            log.warn("HEADER IS NULL");
-//        }
-//        if(!authHeader.startsWith("Bearer ")){
-//            log.warn("DOES NOT STARTS WITH ???");
-//        }
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             jwt = authHeader.substring(7);
             try {
-                username = jwtTokenUtils.getUsername(jwt);
+                username = jwtTokenParser.getUsername(jwt);
             } catch (ExpiredJwtException e) {
-                log.debug("Token lifetime is expired");
+                log.error("Token lifetime is expired");
+                sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Token has expired.");
+
             } catch (SignatureException e) {
-                log.debug("Signature is incorrect");
+                log.error("Signature is incorrect");
+                sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Invalid token signature.");
             }
         }
 
@@ -52,12 +47,21 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
                     username,
                     null,
-                    jwtTokenUtils.getRoles(jwt).stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList())
+                    jwtTokenParser.getRoles(jwt).stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList())
             );
             SecurityContextHolder.getContext().setAuthentication(token);
         }
         filterChain.doFilter(request, response);
-
-
     }
+    private void sendErrorResponse(HttpServletResponse response, int status, String message) throws IOException {
+        response.setStatus(status);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        // You can customize the JSON response as needed:
+        String jsonResponse = String.format("{\"error\": \"%s\"}", message);
+        response.getWriter().write(jsonResponse);
+        response.getWriter().flush();
+        response.getWriter().close();
+    }
+
 }

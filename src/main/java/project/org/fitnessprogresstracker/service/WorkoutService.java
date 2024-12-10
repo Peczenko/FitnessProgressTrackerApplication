@@ -1,5 +1,6 @@
 package project.org.fitnessprogresstracker.service;
 
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,11 +20,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@AllArgsConstructor
 public class WorkoutService {
-    @Autowired
-    private WorkoutRepository workoutRepository;
-    @Autowired
-    private UserService userService;
+    private final WorkoutRepository workoutRepository;
+    private final UserService userService;
 
     public WorkoutDto createNewWorkout(WorkoutDto workoutDTO) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -36,7 +36,8 @@ public class WorkoutService {
                 .duration(workoutDTO.getDuration())
                 .name(workoutDTO.getName())
                 .createdAt(new Date()).build();
-        workoutRepository.save(workout);
+        Workout savedWorkout = workoutRepository.save(workout);
+        workout.setId(savedWorkout.getId());
         return workoutDTO;
     }
 
@@ -44,15 +45,17 @@ public class WorkoutService {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userService.findByUsername(username).get();
 
-        if (workoutRepository.findById(id).isEmpty()) {
+        Optional<Workout> optionalWorkout = workoutRepository.findById(id);
+        if (optionalWorkout.isEmpty()) {
             return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), "Workout with such id does not exist"), HttpStatus.BAD_REQUEST);
         }
-        Workout workout = workoutRepository.findById(id).get();
+        Workout workout = optionalWorkout.get();
 
         if (!workout.getUser().getUsername().equals(username)) {
             return new ResponseEntity<>(new AppError(HttpStatus.FORBIDDEN.value(), "Forbidden"), HttpStatus.FORBIDDEN);
         }
         WorkoutDto workoutDTO = WorkoutDto.builder()
+                .id(workout.getId())
                 .name(workout.getName())
                 .createdAt(workout.getCreatedAt())
                 .duration(workout.getDuration())
@@ -63,7 +66,7 @@ public class WorkoutService {
         return ResponseEntity.ok(workoutDTO);
     }
 
-    public ResponseEntity<?> getAllWorkouts() {
+    public ResponseEntity<List<WorkoutDto>> getAllWorkouts() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         Collection<Workout> workouts = workoutRepository.findAllByUserUsername(username);
         List<WorkoutDto> convertedWorkouts = workouts.stream().map(this::convertToDto).collect(Collectors.toList());
@@ -71,12 +74,13 @@ public class WorkoutService {
     }
 
     private WorkoutDto convertToDto(Workout workout) {
-        UserDto userDto = UserDto.builder().
-                username(workout.getUser().getUsername())
+        UserDto userDto = UserDto.builder()
+                .username(workout.getUser().getUsername())
                 .email(workout.getUser().getEmail())
                 .build();
 
         WorkoutDto workoutDTO = WorkoutDto.builder()
+                .id(workout.getId())
                 .name(workout.getName())
                 .description(workout.getDescription())
                 .createdAt(workout.getCreatedAt())
@@ -88,20 +92,43 @@ public class WorkoutService {
 
     public ResponseEntity<?> updateWorkout(Long id, WorkoutDto workoutDto) {
         Optional<Workout> optionalWorkout = workoutRepository.findById(id);
+
         if (optionalWorkout.isEmpty()) {
             return new ResponseEntity<>(new AppError(HttpStatus.NOT_FOUND.value(), "Workout not found"), HttpStatus.NOT_FOUND);
         }
+
         Workout workout = optionalWorkout.get();
         String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+
         if (!workout.getUser().getUsername().equals(currentUsername)) {
             return new ResponseEntity<>(new AppError(HttpStatus.FORBIDDEN.value(), "You do not have permission to update this workout"), HttpStatus.FORBIDDEN);
         }
-        workout.setName(workoutDto.getName());
-        workout.setDescription(workout.getDescription());
-        workout.setDuration(workout.getDuration());
-        workout.setCreatedAt(new Date());
+
+
+        if (workoutDto.getName() != null) workout.setName(workoutDto.getName());
+        if (workoutDto.getDescription() != null) workout.setDescription(workoutDto.getDescription());
+        if (workoutDto.getDuration() > 0) workout.setDuration(workoutDto.getDuration());
+        if (workoutDto.getCreatedAt() != null) workout.setCreatedAt(new Date());
 
         workoutRepository.save(workout);
         return ResponseEntity.ok(convertToDto(workout));
+    }
+    public ResponseEntity<?> deleteWorkout(Long id){
+        Optional<Workout> optionalWorkout = workoutRepository.findById(id);
+
+        if (optionalWorkout.isEmpty()) {
+            return new ResponseEntity<>(new AppError(HttpStatus.NOT_FOUND.value(), "Workout not found"), HttpStatus.NOT_FOUND);
+        }
+
+        Workout workout = optionalWorkout.get();
+        String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        if (!workout.getUser().getUsername().equals(currentUsername)) {
+            return new ResponseEntity<>(new AppError(HttpStatus.FORBIDDEN.value(), "You do not have permission to update this workout"), HttpStatus.FORBIDDEN);
+        }
+
+        workoutRepository.deleteById(id);
+        return ResponseEntity.ok(this.convertToDto(workout));
+
     }
 }

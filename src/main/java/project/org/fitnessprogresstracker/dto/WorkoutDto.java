@@ -9,6 +9,7 @@ import java.util.Date;
 @Data
 @Builder
 public class WorkoutDto {
+    private Long id;
     private String name;
     private String description;
     private int duration;
