@@ -1,7 +1,6 @@
 package project.org.fitnessprogresstracker.service;
 
 
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,7 +23,7 @@ public class JwtTokenService {
     @Value("${jwt.lifetime}")
     private Duration jwtLifetime;
 
-    public String generateToken(UserDetails userDetails){
+    public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
         List<String> roleList = userDetails.getAuthorities()
                 .stream()
@@ -33,7 +32,7 @@ public class JwtTokenService {
         claims.put("roles", roleList);
 
         Date issuedDate = new Date();
-        Date expiredDate = new Date(issuedDate.getTime()+jwtLifetime.toMillis());
+        Date expiredDate = new Date(issuedDate.getTime() + jwtLifetime.toMillis());
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(userDetails.getUsername())

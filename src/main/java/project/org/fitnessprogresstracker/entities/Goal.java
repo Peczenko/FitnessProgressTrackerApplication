@@ -7,30 +7,31 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
-import java.util.List;
 
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Entity
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
-
-public class Progress {
+public class Goal {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    private String name;
+
+    @Enumerated(EnumType.STRING)
+    private ExerciseType exerciseType;
+    private String customDescription;
+
+
+    private Double targetWeight;
+    private Integer targetReps;
+
     private Date createdAt;
-    private int weightStart;
-    private int weightGoal;
-    private int weightCurr;
-    private int workoutsCompleted;
-    private String notes;
-    private int caloriesBurnt;
-    private String goalType;
-    private boolean isGoalAchieved;
+    private Date deadline;
 
     @ManyToOne
-    @JoinColumn(name="user_id")
+    @JoinColumn(name = "user_id")
     private User user;
-
 }

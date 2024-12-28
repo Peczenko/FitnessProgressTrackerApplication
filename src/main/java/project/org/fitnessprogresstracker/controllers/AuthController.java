@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import project.org.fitnessprogresstracker.dto.JwtRequest;
 import project.org.fitnessprogresstracker.dto.RegistrationUserDto;
+import project.org.fitnessprogresstracker.dto.UserProfileDto;
 import project.org.fitnessprogresstracker.service.AuthService;
 
 @CrossOrigin(origins = "*")
@@ -26,9 +27,13 @@ public class AuthController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<?> userInfo(){
+    public ResponseEntity<?> userInfo() {
+        return authService.getUserInfo();
+    }
 
-        return null;
+    @PostMapping("/me")
+    public ResponseEntity<?> setUserInfo(@RequestBody UserProfileDto userProfileDto) {
+        return authService.setUserInfo(userProfileDto);
     }
 
 }

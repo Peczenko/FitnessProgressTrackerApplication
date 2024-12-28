@@ -1,10 +1,8 @@
 package project.org.fitnessprogresstracker;
 
-
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 import project.org.fitnessprogresstracker.entities.Workout;
 import project.org.fitnessprogresstracker.repository.WorkoutRepository;
 
@@ -12,8 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest
-@ActiveProfiles("test")
-class FitnessProgressTrackerApplicationTests {
+public class DatabaseTest {
     @Autowired
     private WorkoutRepository workoutRepository;
 
@@ -31,8 +28,4 @@ class FitnessProgressTrackerApplicationTests {
         assertEquals("Test Workout", savedWorkout.getName());
     }
 }
-
-
-
-
 

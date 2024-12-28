@@ -1,0 +1,116 @@
+package project.org.fitnessprogresstracker.entities;
+
+public enum ExerciseType {
+    // Chest exercises
+    BENCH_PRESS,
+    INCLINE_BENCH_PRESS,
+    DECLINE_BENCH_PRESS,
+    PUSH_UP,
+    CHEST_FLY,
+    CABLE_CROSSOVER,
+    PULLOVER,
+
+    // Back exercises
+    PULL_UP,
+    CHIN_UP,
+    LAT_PULLDOWN,
+    BENT_OVER_ROW,
+    T_BAR_ROW,
+    SEATED_CABLE_ROW,
+    DEADLIFT,
+    SHRUGS,
+
+    // Shoulder exercises
+    OVERHEAD_PRESS,
+    DUMBBELL_SHOULDER_PRESS,
+    LATERAL_RAISE,
+    FRONT_RAISE,
+    UPRIGHT_ROW,
+    REAR_DELT_FLY,
+    ARNOLD_PRESS,
+
+    // Biceps exercises
+    BICEP_CURL,
+    HAMMER_CURL,
+    CONCENTRATION_CURL,
+    PREACHER_CURL,
+    CABLE_BICEP_CURL,
+    INCLINE_BICEP_CURL,
+    ZOTTMAN_CURL,
+
+    // Triceps exercises
+    TRICEP_DIP,
+    CLOSE_GRIP_BENCH_PRESS,
+    TRICEP_EXTENSION,
+    OVERHEAD_TRICEP_EXTENSION,
+    ROPE_PUSHDOWN,
+    KICKBACKS,
+    SKULL_CRUSHERS,
+
+    // Legs - Quads
+    SQUAT,
+    FRONT_SQUAT,
+    BULGARIAN_SPLIT_SQUAT,
+    LEG_PRESS,
+    LUNGES,
+    STEP_UP,
+    LEG_EXTENSION,
+
+    // Legs - Hamstrings
+    ROMANIAN_DEADLIFT,
+    LYING_LEG_CURL,
+    SEATED_LEG_CURL,
+    GOOD_MORNING,
+    SINGLE_LEG_DEADLIFT,
+    GLUTE_BRIDGE,
+
+    // Legs - Calves
+    CALF_RAISE,
+    SEATED_CALF_RAISE,
+    DONKEY_CALF_RAISE,
+
+    // Core/Abs
+    PLANK,
+    CRUNCHES,
+    LEG_RAISE,
+    BICYCLE_CRUNCH,
+    MOUNTAIN_CLIMBER,
+    RUSSIAN_TWIST,
+    HANGING_LEG_RAISE,
+    SIDE_PLANK,
+    AB_WHEEL_ROLL_OUT,
+
+    // Cardio
+    RUNNING,
+    CYCLING,
+    ROWING,
+    SKIPPING,
+    BURPEES,
+    JUMPING_JACKS,
+    HIGH_KNEES,
+    BOX_JUMPS,
+
+    // Full Body
+    CLEAN_AND_JERK,
+    SNATCH,
+    KETTLEBELL_SWING,
+    FARMER_WALK,
+    BEAR_CRAWL,
+
+    // Glutes
+    HIP_THRUST,
+    SUMO_DEADLIFT,
+    GLUTE_KICKBACK,
+    DONKEY_KICKS,
+
+    // Forearms
+    WRIST_CURL,
+    REVERSE_WRIST_CURL,
+    FARMERS_WALK,
+
+    // Neck
+    NECK_EXTENSION,
+    NECK_FLEXION,
+    NECK_BRIDGE
+}
+

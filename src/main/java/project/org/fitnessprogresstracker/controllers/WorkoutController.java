@@ -37,9 +37,15 @@ public class WorkoutController {
     public ResponseEntity<?> updateWorkout(@PathVariable Long id, @RequestBody WorkoutDto workoutDto) {
         return workoutService.updateWorkout(id, workoutDto);
     }
+
     @DeleteMapping("{id}")
-    public ResponseEntity<?> deleteWorkout(@PathVariable Long id){
+    public ResponseEntity<?> deleteWorkout(@PathVariable Long id) {
         return workoutService.deleteWorkout(id);
+    }
+
+    @GetMapping("/get/custom-type")
+    public ResponseEntity<?> getAllExerciseCustomTypes() {
+        return workoutService.getAllExerciseCustomTypes();
     }
 
 

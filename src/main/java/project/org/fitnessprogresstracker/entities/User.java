@@ -29,4 +29,7 @@ public class User {
     )
     private Collection<Role> roles;
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private UserProfile userProfile;
+
 }
