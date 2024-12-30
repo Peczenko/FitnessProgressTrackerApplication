@@ -53,12 +53,12 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/auth/logout").authenticated()
                         .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/workouts").authenticated()
-                        .requestMatchers("/progress").authenticated()
-                        .requestMatchers("/goals").authenticated()
-                        .requestMatchers("/progress/").authenticated()
-                        .requestMatchers("/admin").hasRole("ADMIN")
+                        .requestMatchers("/workouts/**").authenticated()
+                        .requestMatchers("/goals/**").authenticated()
+                        .requestMatchers("/progress/**").authenticated()
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().permitAll())
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)

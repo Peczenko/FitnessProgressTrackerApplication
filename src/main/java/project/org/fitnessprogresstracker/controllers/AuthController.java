@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import project.org.fitnessprogresstracker.dto.JwtRequest;
 import project.org.fitnessprogresstracker.dto.RegistrationUserDto;
 import project.org.fitnessprogresstracker.dto.UserProfileDto;
+import project.org.fitnessprogresstracker.entities.TokenRefreshRequest;
 import project.org.fitnessprogresstracker.service.AuthService;
 
 @CrossOrigin(origins = "*")
@@ -34,6 +35,16 @@ public class AuthController {
     @PostMapping("/me")
     public ResponseEntity<?> setUserInfo(@RequestBody UserProfileDto userProfileDto) {
         return authService.setUserInfo(userProfileDto);
+    }
+
+    @PostMapping("/refresh_token")
+    public ResponseEntity<?> refreshToken(@RequestBody TokenRefreshRequest tokenRefreshRequest) {
+        return authService.refreshAccessToken(tokenRefreshRequest);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout() {
+        return authService.logout();
     }
 
 }

@@ -11,9 +11,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import project.org.fitnessprogresstracker.dto.*;
-import project.org.fitnessprogresstracker.entities.UserProfile;
+import project.org.fitnessprogresstracker.entities.*;
 import project.org.fitnessprogresstracker.exceptions.AppError;
-import project.org.fitnessprogresstracker.entities.User;
+import project.org.fitnessprogresstracker.repository.RefreshTokenRepository;
 import project.org.fitnessprogresstracker.repository.UserProfileInfoRepository;
 
 import java.util.Optional;
@@ -25,6 +25,8 @@ public class AuthService {
     private final JwtTokenService jwtTokenService;
     private final AuthenticationManager authenticationManager;
     private final UserProfileInfoRepository userProfileInfoRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
+    private final JwtTokenParser jwtTokenParser;
 
     public ResponseEntity<?> createAuthToken(JwtRequest authRequest) {
         try {
@@ -33,8 +35,9 @@ public class AuthService {
             return new ResponseEntity<>(new AppError(HttpStatus.UNAUTHORIZED.value(), "Incorrect username or password"), HttpStatus.UNAUTHORIZED);
         }
         UserDetails userDetails = userService.loadUserByUsername(authRequest.getUsername());
-        String token = jwtTokenService.generateToken(userDetails);
-        return ResponseEntity.ok(new JwtResponse(token));
+        String accessToken = jwtTokenService.generateAccessToken(userDetails);
+        String refreshToken = jwtTokenService.generateRefreshToken(userDetails);
+        return ResponseEntity.ok(new JwtResponse(accessToken, refreshToken));
     }
 
     public ResponseEntity<?> createNewUser(RegistrationUserDto registrationUserDto) {
@@ -65,6 +68,38 @@ public class AuthService {
         UserProfileDto userProfileDto = this.userProfileToDto(userProfile.get(), optionalUser.get());
 
         return ResponseEntity.ok(userProfileDto);
+
+    }
+
+    public ResponseEntity<?> refreshAccessToken(TokenRefreshRequest tokenRefreshRequest) {
+        String token = tokenRefreshRequest.getRefreshToken();
+
+        Optional<RefreshToken> optionalRefreshToken = refreshTokenRepository.findByToken(token);
+        if (optionalRefreshToken.isEmpty()) {
+            return new ResponseEntity<>(new AppError(HttpStatus.UNAUTHORIZED.value(), "Incorrect refresh token"), HttpStatus.UNAUTHORIZED);
+        }
+
+        if (!jwtTokenService.verifyExpiration(optionalRefreshToken.get())) {
+            new ResponseEntity<>(new AppError(HttpStatus.UNAUTHORIZED.value(), "Refresh token has expired. Please log in again."), HttpStatus.UNAUTHORIZED);
+        }
+
+        String username = jwtTokenParser.getUsername(token);
+        UserDetails userDetails = userService.loadUserByUsername(username);
+        String accessToken = jwtTokenService.generateAccessToken(userDetails);
+        TokenRefreshResponse tokenRefreshResponse = new TokenRefreshResponse();
+        tokenRefreshResponse.setAccessToken(accessToken);
+        return ResponseEntity.ok(tokenRefreshResponse);
+
+    }
+
+    public ResponseEntity<?> logout() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Optional<RefreshToken> optionalRefreshToken = refreshTokenRepository.findByUserUsername(username);
+        if (optionalRefreshToken.isEmpty()) {
+            return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), "You are already logged out"), HttpStatus.BAD_REQUEST);
+        }
+        refreshTokenRepository.deleteByUserUsername(username);
+        return ResponseEntity.ok("You are logged out");
 
     }
 

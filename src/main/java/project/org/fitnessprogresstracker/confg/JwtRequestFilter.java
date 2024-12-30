@@ -1,7 +1,9 @@
 package project.org.fitnessprogresstracker.confg;
 
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,30 +31,35 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         String authHeader = request.getHeader("Authorization");
         String username = null;
         String jwt = null;
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            jwt = authHeader.substring(7);
-            try {
+        try {
+            if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                jwt = authHeader.substring(7);
                 username = jwtTokenParser.getUsername(jwt);
-            } catch (ExpiredJwtException e) {
-                log.error("Token lifetime is expired");
-                sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Token has expired.");
-
-            } catch (SignatureException e) {
-                log.error("Signature is incorrect");
-                sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Invalid token signature.");
             }
+
+            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                        username,
+                        null,
+                        jwtTokenParser.getRoles(jwt).stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList())
+                );
+                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+            }
+
+        } catch (ExpiredJwtException e) {
+            sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Token has expired.");
+            return;
+        } catch (SignatureException e) {
+            sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Invalid token signature.");
+            return;
+        } catch (MalformedJwtException | IllegalArgumentException | UnsupportedJwtException | NullPointerException e) {
+            sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Malformed or unsupported token.");
+            return;
         }
 
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
-                    username,
-                    null,
-                    jwtTokenParser.getRoles(jwt).stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList())
-            );
-            SecurityContextHolder.getContext().setAuthentication(token);
-        }
         filterChain.doFilter(request, response);
     }
+
     private void sendErrorResponse(HttpServletResponse response, int status, String message) throws IOException {
         response.setStatus(status);
         response.setContentType("application/json");
