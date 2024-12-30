@@ -35,7 +35,7 @@ public class WorkoutService {
 
     public ResponseEntity<?> getWorkoutById(Long id) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userService.findByUsername(username).get();
+
 
         Optional<Workout> optionalWorkout = workoutRepository.findById(id);
         if (optionalWorkout.isEmpty()) {
@@ -76,7 +76,7 @@ public class WorkoutService {
         if (workoutDto.getName() != null) workout.setName(workoutDto.getName());
         if (workoutDto.getDescription() != null) workout.setDescription(workoutDto.getDescription());
         if (workoutDto.getDuration() > 0) workout.setDuration(workoutDto.getDuration());
-        if (workoutDto.getCreatedAt() != null) workout.setCreatedAt(workout.getCreatedAt());
+        if (workoutDto.getCreatedAt() != null) workout.setCreatedAt(workoutDto.getCreatedAt());
 
 
         List<Exercise> updatedExercises = workoutDto.getExercises().stream()
