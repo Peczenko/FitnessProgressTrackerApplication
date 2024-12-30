@@ -46,17 +46,20 @@ public class ProgressService {
         Double targetWeight = goal.getTargetWeight();
         Integer targetReps = goal.getTargetReps();
 
+        double weightProgress = 0.0;
+        double repsProgress = 0.0;
+
         if (targetWeight != null && targetWeight > 0) {
             Double maxWeightLifted = (Double) stats.getOrDefault("maxWeightLifted", 0.0);
-            double weightProgress = Math.min((maxWeightLifted / targetWeight) * 100, 100);
+            weightProgress = Math.min((maxWeightLifted / targetWeight) * 100, 100);
             stats.put("weightGoalProgressPct", weightProgress);
         } else {
-            stats.put("weightGoalProgressPc0t", 0.0);
+            stats.put("weightGoalProgressPct", 0.0);
         }
 
         if (targetReps != null && targetReps > 0) {
             Integer bestSetReps = (Integer) stats.getOrDefault("maxRepsInSingleSet", 0);
-            double repsProgress = Math.min((bestSetReps.doubleValue() / targetReps) * 100, 100);
+            repsProgress = Math.min((bestSetReps.doubleValue() / targetReps) * 100, 100);
             stats.put("repsGoalProgressPct", repsProgress);
         } else {
             stats.put("repsGoalProgressPct", 0.0);
@@ -71,8 +74,12 @@ public class ProgressService {
             stats.put("deadlinePassed", daysToDeadline < 0);
         }
 
+        double combinedProgress = (0.7 * weightProgress) + (0.3 * repsProgress);
+        stats.put("combinedGoalProgressPct", combinedProgress);
+
         return stats;
     }
+
 
 
     /**

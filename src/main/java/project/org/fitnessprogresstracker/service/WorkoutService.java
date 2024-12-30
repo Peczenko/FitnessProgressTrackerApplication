@@ -83,7 +83,6 @@ public class WorkoutService {
                 .map(exerciseDto -> WorkoutMapper.updateExerciseFromDto(exerciseDto, workout, workout.getExercises()))
                 .collect(Collectors.toList());
 
-        // Remove Exercises no longer in the DTO
         workout.getExercises().removeIf(existingExercise ->
                 updatedExercises.stream().noneMatch(updatedExercise -> updatedExercise.getId() != null &&
                         updatedExercise.getId().equals(existingExercise.getId())));
